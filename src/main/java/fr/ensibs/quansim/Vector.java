@@ -8,7 +8,7 @@ public class Vector<T extends Number<T>> extends Matrix<T> {
     /**
      * true if the vector is vertical, false if it is horizontal
      */
-    private boolean isVertical;
+    private final boolean isVertical;
 
     /**
      * Constructor.

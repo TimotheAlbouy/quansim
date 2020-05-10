@@ -12,7 +12,7 @@ public class Matrix<T extends Number<T>> {
     /**
      * the 2-dimensional list containing the matrix's cells.
      */
-    private List<List<T>> cells = new ArrayList<>();
+    private final List<List<T>> cells = new ArrayList<>();
 
     /**
      * Constructor.

@@ -6,11 +6,6 @@ package fr.ensibs.quansim;
 public class QuantumGates {
 
     /**
-     * I2 identity matrix
-     */
-    public static final Matrix<Complex> I2 = new Matrix<>(2, 2);
-
-    /**
      * X quantum game matrix
      */
     public static final Matrix<Complex> X = new Matrix<>(2, 2);
@@ -30,12 +25,17 @@ public class QuantumGates {
      */
     public static final Matrix<Complex> H = new Matrix<>(2, 2);
 
+    /**
+     * CNOT quantum game matrix
+     */
+    public static final Matrix<Complex> CNOT = new Matrix<>(4, 4);
+
     static {
-        initializeI2();
         initializeX();
         initializeY();
         initializeZ();
         initializeH();
+        initializeCNOT();
     }
 
     /**
@@ -43,16 +43,6 @@ public class QuantumGates {
      */
     private QuantumGates() {
         throw new AssertionError();
-    }
-
-    /**
-     * Initialize the I2 identity matrix.
-     */
-    private static void initializeI2() {
-        I2.setCell(0, 0, new Complex(1, 0));
-        I2.setCell(1, 0, new Complex(0, 0));
-        I2.setCell(0, 1, new Complex(0, 0));
-        I2.setCell(1, 1, new Complex(1, 0));
     }
 
     /**
@@ -93,6 +83,28 @@ public class QuantumGates {
         H.setCell(1, 0, new Complex(1 / Math.sqrt(2), 0));
         H.setCell(0, 1, new Complex(1 / Math.sqrt(2), 0));
         H.setCell(1, 1, new Complex(-1 / Math.sqrt(2), 0));
+    }
+
+    /**
+     * Initialize the CNOT quantum gate matrix.
+     */
+    private static void initializeCNOT() {
+        CNOT.setCell(0, 0, new Complex(1, 0));
+        CNOT.setCell(1, 0, new Complex(0, 0));
+        CNOT.setCell(2, 0, new Complex(0, 0));
+        CNOT.setCell(3, 0, new Complex(0, 0));
+        CNOT.setCell(0, 1, new Complex(0, 0));
+        CNOT.setCell(1, 1, new Complex(1, 0));
+        CNOT.setCell(2, 1, new Complex(0, 0));
+        CNOT.setCell(3, 1, new Complex(0, 0));
+        CNOT.setCell(0, 2, new Complex(0, 0));
+        CNOT.setCell(1, 2, new Complex(0, 0));
+        CNOT.setCell(2, 2, new Complex(0, 0));
+        CNOT.setCell(3, 2, new Complex(1, 0));
+        CNOT.setCell(0, 3, new Complex(0, 0));
+        CNOT.setCell(1, 3, new Complex(0, 0));
+        CNOT.setCell(2, 3, new Complex(1, 0));
+        CNOT.setCell(3, 3, new Complex(0, 0));
     }
 
 }

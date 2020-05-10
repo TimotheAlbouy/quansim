@@ -97,6 +97,10 @@ public class Complex implements Number<Complex> {
         return new Complex(real, imaginary);
     }
 
+    /**
+     * Get a copy of the complex number.
+     * @return a copy of the complex
+     */
     public Complex copy() {
         return new Complex(this.re, this.im);
     }
@@ -143,8 +147,7 @@ public class Complex implements Number<Complex> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
+        if (!(o instanceof Complex)) return false;
         Complex c = (Complex) o;
         double threshold = .000000001;
         boolean reEquals = this.re - threshold < c.re && this.re + threshold > c.re;

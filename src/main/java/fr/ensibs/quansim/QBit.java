@@ -46,7 +46,7 @@ public class QBit {
      * Get the probability to draw a |0>.
      * @return the given probability
      */
-    public double proba0() {
+    public double p0() {
         return Math.pow(this.alpha().modulus(), 2);
     }
 
@@ -54,7 +54,7 @@ public class QBit {
      * Get the probability to draw a |1>.
      * @return the given probability
      */
-    public double proba1() {
+    public double p1() {
         return Math.pow(this.beta().modulus(), 2);
     }
 
@@ -72,6 +72,22 @@ public class QBit {
             this.state.setCoordinate(1, new Complex(0, 0));
         }
         return bitIs1;
+    }
+
+    /**
+     * Get the state vector of the qbit.
+     * @return the qbit state
+     */
+    public Vector<Complex> getState() {
+        return this.state;
+    }
+
+    /**
+     * Set the state vector of the qbit.
+     * @param state the new qbit state
+     */
+    public void setState(Vector<Complex> state) {
+        this.state = state;
     }
 
     /**
@@ -108,6 +124,31 @@ public class QBit {
     public QBit H() {
         this.state = H.times(this.state).getColumnVector(0);
         return this;
+    }
+
+    /**
+     * Create a copy of the qbit, even though it is physically impossible.
+     * @return a copy of the qbit
+     */
+    public QBit copy() {
+        return new QBit(this.alpha().copy(), this.beta().copy());
+    }
+
+    /**
+     * Compare the qbit with another one, even though it is physically impossible.
+     * @param o the object to compare with
+     * @return true if the 2 qbits are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof QBit)) return false;
+        QBit qBit = (QBit) o;
+        return this.alpha().equals(qBit.alpha()) && this.beta().equals(qBit.beta());
+    }
+
+    @Override
+    public String toString() {
+        return state.toString();
     }
 
 }
