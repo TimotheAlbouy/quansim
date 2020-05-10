@@ -23,10 +23,27 @@ public class Matrix<T extends Number<T>> {
         if (width <= 0 || height <= 0)
             throw new IllegalArgumentException("The matrix's dimensions cannot be negative.");
 
-        for (int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
             this.cells.add(new ArrayList<>());
-            for (int y = 0; y < height; y++)
-                this.cells.get(x).add(null);
+            for (int x = 0; x < width; x++)
+                this.cells.get(y).add(null);
+        }
+    }
+
+    /**
+     * Constructor.
+     * @param cells the 2-dimensional array containing the matrix values
+     */
+    public Matrix(T[][] cells) {
+        if (cells == null)
+            throw new NullPointerException("The initialization matrix cannot be null.");
+        if (cells.length == 0)
+            throw new IllegalArgumentException("The initialization matrix cannot be empty.");
+
+        for (int y = 0; y < cells.length; y++) {
+            this.cells.add(new ArrayList<>());
+            for (int x = 0; x < cells[0].length; x++)
+                this.cells.get(y).add(cells[y][x]);
         }
     }
 
@@ -35,7 +52,7 @@ public class Matrix<T extends Number<T>> {
      * @return the width of the matrix
      */
     public int width() {
-        return this.cells.size();
+        return this.cells.get(0).size();
     }
 
     /**
@@ -43,7 +60,7 @@ public class Matrix<T extends Number<T>> {
      * @return the height of the matrix
      */
     public int height() {
-        return this.cells.get(0).size();
+        return this.cells.size();
     }
 
     /**
@@ -59,7 +76,7 @@ public class Matrix<T extends Number<T>> {
         if (y < 0 || y >= this.height())
             throw new IndexOutOfBoundsException("The y coordinate is out of bounds.");
 
-        return this.cells.get(x).get(y);
+        return this.cells.get(y).get(x);
     }
 
     /**
@@ -75,7 +92,7 @@ public class Matrix<T extends Number<T>> {
         if (y < 0 || y >= this.height())
             throw new IndexOutOfBoundsException("The y coordinate is out of bounds.");
 
-        this.cells.get(x).set(y, n);
+        this.cells.get(y).set(x, n);
     }
 
     /**
