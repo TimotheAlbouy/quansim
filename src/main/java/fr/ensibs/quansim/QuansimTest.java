@@ -139,7 +139,7 @@ public class QuansimTest {
             if (qb1.randomDraw()) ctr1++;
             if (qb2.randomDraw()) ctr2++;
         }
-        if (withinMargin(ctr1, ctr2))
+        if (roughlyEqual(ctr1, ctr2))
             System.out.println("success");
         else System.out.println("failure");
 
@@ -153,7 +153,7 @@ public class QuansimTest {
             if (qb1.randomDraw()) ctr1++;
             if (qb2.randomDraw()) ctr2++;
         }
-        if (withinMargin(ctr1, ctr2))
+        if (roughlyEqual(ctr1, ctr2))
             System.out.println("success");
         else System.out.println("failure");
 
@@ -168,7 +168,7 @@ public class QuansimTest {
             if (qb1.randomDraw()) ctr1++;
             if (qb2.randomDraw()) ctr2++;
         }
-        if (withinMargin(ctr1, ctr2))
+        if (roughlyEqual(ctr1, ctr2))
             System.out.println("success");
         else System.out.println("failure");
 
@@ -188,7 +188,7 @@ public class QuansimTest {
             if (qb3.randomDraw()) ctr3++;
             if (qb4.randomDraw()) ctr4++;
         }
-        if (withinMargin(ctr1, ctr2) && withinMargin(ctr1, ctr3) && withinMargin(ctr1, ctr4))
+        if (roughlyEqual(ctr1, ctr2) && roughlyEqual(ctr1, ctr3) && roughlyEqual(ctr1, ctr4))
             System.out.println("success");
         else System.out.println("failure");
 
@@ -203,7 +203,7 @@ public class QuansimTest {
             if (qb1.randomDraw()) ctr1++;
             if (qb2.randomDraw()) ctr2++;
         }
-        if (withinMargin(ctr1, ctr2))
+        if (roughlyEqual(ctr1, ctr2))
             System.out.println("success");
         else System.out.println("failure");
 
@@ -217,7 +217,7 @@ public class QuansimTest {
             if (qb1.randomDraw()) ctr1++;
             if (qb2.randomDraw()) ctr2++;
         }
-        if (withinMargin(ctr1, ctr2))
+        if (roughlyEqual(ctr1, ctr2))
             System.out.println("success");
         else System.out.println("failure");
     }
@@ -261,9 +261,9 @@ public class QuansimTest {
      * Tell if the distance between the two counters is inferior to the margin of error.
      * @param ctr1 the first counter
      * @param ctr2 the second counter
-     * @return true if the 2 counters are within the margin of error, false otherwise
+     * @return true if and only if the 2 counters are roughly equal
      */
-    private boolean withinMargin(int ctr1, int ctr2) {
+    private boolean roughlyEqual(int ctr1, int ctr2) {
         int marginOfError = (int) (ITERATIONS * THRESHOLD);
         return ctr1 + marginOfError >= ctr2 && ctr1 - marginOfError <= ctr2;
     }
