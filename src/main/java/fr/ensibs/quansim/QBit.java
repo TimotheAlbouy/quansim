@@ -10,7 +10,7 @@ public class QBit {
     /**
      * the state of the qbit, represented by a complex vector
      */
-    private Vector<Complex> state = new Vector<>(2);
+    private ComplexVector state = new ComplexVector(2);
 
     /**
      * Constructor.
@@ -75,19 +75,19 @@ public class QBit {
     }
 
     /**
-     * Get the state vector of the qbit.
-     * @return the qbit state
+     * Apply a quantic gate on the qbit.
+     * @param qg the quantic gate matrix
+     * @return the qbit after the quantic gate
      */
-    public Vector<Complex> getState() {
-        return this.state;
-    }
+    public QBit apply(ComplexMatrix qg) {
+        if (qg == null)
+            throw new NullPointerException("The operation matrix cannot be null.");
 
-    /**
-     * Set the state vector of the qbit.
-     * @param state the new qbit state
-     */
-    public void setState(Vector<Complex> state) {
-        this.state = state;
+        if (qg.width() != 2 && qg.height() != 2)
+            throw new IllegalArgumentException("The quantum gate matrix must be 2x2.");
+
+        this.state = qg.times(this.state).getColumnVector(0);
+        return this;
     }
 
     /**
@@ -95,8 +95,7 @@ public class QBit {
      * @return the qbit after the quantum gate
      */
     public QBit X() {
-        this.state = X.times(this.state).getColumnVector(0);
-        return this;
+        return this.apply(X);
     }
 
     /**
@@ -104,8 +103,7 @@ public class QBit {
      * @return the qbit after the quantum gate
      */
     public QBit Y() {
-        this.state = Y.times(this.state).getColumnVector(0);
-        return this;
+        return this.apply(Y);
     }
 
     /**
@@ -113,8 +111,7 @@ public class QBit {
      * @return the qbit after the quantum gate
      */
     public QBit Z() {
-        this.state = Z.times(this.state).getColumnVector(0);
-        return this;
+        return this.apply(Z);
     }
 
     /**
@@ -122,23 +119,17 @@ public class QBit {
      * @return the qbit after the quantum gate
      */
     public QBit H() {
-        this.state = H.times(this.state).getColumnVector(0);
-        return this;
+        return this.apply(H);
     }
 
     /**
-     * Create a copy of the qbit, even though it is physically impossible.
+     * Create a deep copy of the qbit, even though it is physically impossible.
      * @return a copy of the qbit
      */
     public QBit copy() {
-        return new QBit(this.alpha().copy(), this.beta().copy());
+        return new QBit(this.alpha(), this.beta());
     }
 
-    /**
-     * Compare the qbit with another one, even though it is physically impossible.
-     * @param o the object to compare with
-     * @return true if the 2 qbits are equal, false otherwise
-     */
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof QBit)) return false;
@@ -148,7 +139,7 @@ public class QBit {
 
     @Override
     public String toString() {
-        return state.toString();
+        return this.state.toString();
     }
 
 }

@@ -1,50 +1,38 @@
 package fr.ensibs.quansim;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
- * A matrix of numbers.
+ * A matrix of complex numbers.
  */
-public class Matrix<T extends Number<T>> {
+public class ComplexMatrix {
 
     /**
      * the 2-dimensional list containing the matrix's cells.
      */
-    private final List<List<T>> cells = new ArrayList<>();
+    private final Complex[][] cells;
 
     /**
      * Constructor.
      * @param width the width of the matrix
      * @param height the height of the matrix
      */
-    public Matrix(int width, int height) {
+    public ComplexMatrix(int width, int height) {
         if (width <= 0 || height <= 0)
             throw new IllegalArgumentException("The matrix's dimensions cannot be negative.");
 
-        for (int y = 0; y < height; y++) {
-            this.cells.add(new ArrayList<>());
-            for (int x = 0; x < width; x++)
-                this.cells.get(y).add(null);
-        }
+        this.cells = new Complex[height][width];
     }
 
     /**
      * Constructor.
      * @param cells the 2-dimensional array containing the matrix values
      */
-    public Matrix(T[][] cells) {
+    public ComplexMatrix(Complex[][] cells) {
         if (cells == null)
             throw new NullPointerException("The initialization matrix cannot be null.");
         if (cells.length == 0)
             throw new IllegalArgumentException("The initialization matrix cannot be empty.");
 
-        for (int y = 0; y < cells.length; y++) {
-            this.cells.add(new ArrayList<>());
-            for (int x = 0; x < cells[0].length; x++)
-                this.cells.get(y).add(cells[y][x]);
-        }
+        this.cells = cells;
     }
 
     /**
@@ -52,7 +40,7 @@ public class Matrix<T extends Number<T>> {
      * @return the width of the matrix
      */
     public int width() {
-        return this.cells.get(0).size();
+        return this.cells[0].length;
     }
 
     /**
@@ -60,39 +48,39 @@ public class Matrix<T extends Number<T>> {
      * @return the height of the matrix
      */
     public int height() {
-        return this.cells.size();
+        return this.cells.length;
     }
 
     /**
-     * Get the number of the cell having the x and y coordinates in the matrix.
-     * @param x the x coordinate of the cell
-     * @param y the y coordinate of the cell
-     * @return the number contained in the cell
+     * Get the complex number at the (x, y) coordinates.
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return the complex number of the cell
      */
-    public T getCell(int x, int y) {
+    public Complex getCell(int x, int y) {
         if (x < 0 || x >= this.width())
             throw new IndexOutOfBoundsException("The x coordinate is out of bounds.");
 
         if (y < 0 || y >= this.height())
             throw new IndexOutOfBoundsException("The y coordinate is out of bounds.");
 
-        return this.cells.get(y).get(x);
+        return this.cells[y][x];
     }
 
     /**
      * Set the number of the cell having the x and y coordinates in the matrix.
      * @param x the x coordinate of the cell
      * @param y the y coordinate of the cell
-     * @param n the number to put in the cell
+     * @param c the complex number to put in the cell
      */
-    public void setCell(int x, int y, T n) {
+    public void setCell(int x, int y, Complex c) {
         if (x < 0 || x >= this.width())
             throw new IndexOutOfBoundsException("The x coordinate is out of bounds.");
 
         if (y < 0 || y >= this.height())
             throw new IndexOutOfBoundsException("The y coordinate is out of bounds.");
 
-        this.cells.get(y).set(x, n);
+        this.cells[y][x] = c;
     }
 
     /**
@@ -100,7 +88,7 @@ public class Matrix<T extends Number<T>> {
      * @param m the other matrix
      * @return a new matrix representing the result
      */
-    public Matrix<T> plus(Matrix<T> m) {
+    public ComplexMatrix plus(ComplexMatrix m) {
         if (m == null)
             throw new NullPointerException("The other matrix cannot be null.");
 
@@ -110,11 +98,11 @@ public class Matrix<T extends Number<T>> {
         if (this.height() != m.height())
             throw new IllegalArgumentException("The matrices' heights must be equal.");
 
-        Matrix<T> ret = new Matrix<>(this.width(), this.height());
+        ComplexMatrix ret = new ComplexMatrix(this.width(), this.height());
         for (int y = 0; y < this.height(); y++) {
             for (int x = 0; x < this.width(); x++) {
-                T v = this.getCell(x, y).plus(m.getCell(x, y));
-                ret.setCell(x, y, v);
+                Complex c = this.getCell(x, y).plus(m.getCell(x, y));
+                ret.setCell(x, y, c);
             }
         }
         return ret;
@@ -125,7 +113,7 @@ public class Matrix<T extends Number<T>> {
      * @param m the other matrix
      * @return a new matrix representing the result
      */
-    public Matrix<T> minus(Matrix<T> m) {
+    public ComplexMatrix minus(ComplexMatrix m) {
         if (m == null)
             throw new NullPointerException("The other matrix cannot be null.");
 
@@ -137,20 +125,20 @@ public class Matrix<T extends Number<T>> {
      * @param m the other matrix
      * @return a new matrix representing the result
      */
-    public Matrix<T> times(Matrix<T> m) {
+    public ComplexMatrix times(ComplexMatrix m) {
         if (m == null)
             throw new NullPointerException("The other matrix cannot be null.");
 
         if (this.width() != m.height())
             throw new IllegalArgumentException("This matrix's width must be equal to the other matrix's height.");
 
-        Matrix<T> ret = new Matrix<>(m.width(), this.height());
+        ComplexMatrix ret = new ComplexMatrix(m.width(), this.height());
         for (int y = 0; y < ret.height(); y++) {
             for (int x = 0; x < ret.width(); x++) {
-                T n = this.getCell(0, y).times(m.getCell(x, 0));
+                Complex c = this.getCell(0, y).times(m.getCell(x, 0));
                 for (int i = 1; i < this.width(); i++)
-                    n = n.plus(this.getCell(i, y).times(m.getCell(x, i)));
-                ret.setCell(x, y, n);
+                    c = c.plus(this.getCell(i, y).times(m.getCell(x, i)));
+                ret.setCell(x, y, c);
             }
         }
         return ret;
@@ -161,8 +149,8 @@ public class Matrix<T extends Number<T>> {
      * @param s the scalar
      * @return a new matrix representing the result
      */
-    public Matrix<T> times(double s) {
-        Matrix<T> ret = new Matrix<>(this.width(), this.height());
+    public ComplexMatrix times(double s) {
+        ComplexMatrix ret = new ComplexMatrix(this.width(), this.height());
         for (int x = 0; x < this.width(); x++)
             for (int y = 0; y < this.height(); y++)
                 ret.setCell(x, y, this.getCell(x, y).times(s));
@@ -174,7 +162,7 @@ public class Matrix<T extends Number<T>> {
      * @param s the scalar
      * @return a new matrix representing the result
      */
-    public Matrix<T> divide(double s) {
+    public ComplexMatrix divide(double s) {
         return this.times(1 / s);
     }
 
@@ -182,7 +170,7 @@ public class Matrix<T extends Number<T>> {
      * Get the negative of the matrix.
      * @return a new matrix representing the result
      */
-    public Matrix<T> negative() {
+    public ComplexMatrix negative() {
         return this.times(-1);
     }
 
@@ -190,8 +178,8 @@ public class Matrix<T extends Number<T>> {
      * Get the transpose of the matrix.
      * @return a new matrix representing the result
      */
-    public Matrix<T> transpose() {
-        Matrix<T> ret = new Matrix<>(this.height(), this.width());
+    public ComplexMatrix transpose() {
+        ComplexMatrix ret = new ComplexMatrix(this.height(), this.width());
         for (int x = 0; x < this.width(); x++)
             for (int y = 0; y < this.height(); y++)
                 ret.setCell(y, x, this.getCell(x, y));
@@ -203,11 +191,11 @@ public class Matrix<T extends Number<T>> {
      * @param c the column to retrieve
      * @return the column vector
      */
-    public Vector<T> getColumnVector(int c) {
+    public ComplexVector getColumnVector(int c) {
         if (c < 0 || c >= this.width())
             throw new IndexOutOfBoundsException("The column number is out of bounds.");
 
-        Vector<T> ret = new Vector<>(this.height(), true);
+        ComplexVector ret = new ComplexVector(this.height());
         for (int i = 0; i < this.height(); i++)
             ret.setCoordinate(i, this.getCell(c, i));
         return ret;
@@ -218,11 +206,11 @@ public class Matrix<T extends Number<T>> {
      * @param r the row to retrieve
      * @return the row vector
      */
-    public Vector<T> getRowVector(int r) {
+    public ComplexVector getRowVector(int r) {
         if (r < 0 || r >= this.height())
             throw new IndexOutOfBoundsException("The row number is out of bounds.");
 
-        Vector<T> ret = new Vector<>(this.width(), false);
+        ComplexVector ret = new ComplexVector(this.width());
         for (int i = 0; i < this.width(); i++)
             ret.setCoordinate(i, this.getCell(i, r));
         return ret;
@@ -237,11 +225,11 @@ public class Matrix<T extends Number<T>> {
     }
 
     /**
-     * Get a copy of the matrix.
+     * Create a deep copy of the matrix.
      * @return a new matrix representing the copy
      */
-    public Matrix<T> copy() {
-        Matrix<T> ret = new Matrix<>(this.width(), this.height());
+    public ComplexMatrix copy() {
+        ComplexMatrix ret = new ComplexMatrix(this.width(), this.height());
         for (int x = 0; x < this.width(); x++)
             for (int y = 0; y < this.width(); y++)
                 ret.setCell(x, y, this.getCell(x, y));
@@ -251,8 +239,8 @@ public class Matrix<T extends Number<T>> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Matrix)) return false;
-        Matrix<?> m = (Matrix<?>) o;
+        if (!(o instanceof ComplexMatrix)) return false;
+        ComplexMatrix m = (ComplexMatrix) o;
         if (this.width() != m.width() || this.height() != m.height())
             return false;
         for (int x = 0; x < this.width(); x++)
@@ -260,11 +248,6 @@ public class Matrix<T extends Number<T>> {
                 if (!this.getCell(x, y).equals(m.getCell(x, y)))
                     return false;
         return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(cells);
     }
 
     @Override

@@ -8,7 +8,7 @@ public class QuantumGates {
     /**
      * X quantum game matrix
      */
-    public static final Matrix<Complex> X = new Matrix<>(new Complex[][]{
+    public static final ComplexMatrix X = new ComplexMatrix(new Complex[][]{
             {new Complex(0, 0), new Complex(1, 0)},
             {new Complex(1, 0), new Complex(0, 0)}
     });
@@ -16,7 +16,7 @@ public class QuantumGates {
     /**
      * Y quantum game matrix
      */
-    public static final Matrix<Complex> Y = new Matrix<>(new Complex[][]{
+    public static final ComplexMatrix Y = new ComplexMatrix(new Complex[][]{
             {new Complex(0, 0), new Complex(0, -1)},
             {new Complex(0, 1), new Complex(0, 0)}
     });
@@ -24,7 +24,7 @@ public class QuantumGates {
     /**
      * Z quantum game matrix
      */
-    public static final Matrix<Complex> Z = new Matrix<>(new Complex[][]{
+    public static final ComplexMatrix Z = new ComplexMatrix(new Complex[][]{
             {new Complex(1, 0), new Complex(0, 0)},
             {new Complex(0, 0), new Complex(-1, 0)}
     });
@@ -32,7 +32,7 @@ public class QuantumGates {
     /**
      * H quantum game matrix
      */
-    public static final Matrix<Complex> H = new Matrix<>(new Complex[][]{
+    public static final ComplexMatrix H = new ComplexMatrix(new Complex[][]{
             {new Complex(1 / Math.sqrt(2), 0), new Complex(1 / Math.sqrt(2), 0)},
             {new Complex(1 / Math.sqrt(2), 0), new Complex(-1 / Math.sqrt(2), 0)}
     });
@@ -40,7 +40,7 @@ public class QuantumGates {
     /**
      * CNOT quantum game matrix
      */
-    public static final Matrix<Complex> CNOT = new Matrix<>(new Complex[][]{
+    public static final ComplexMatrix CNOT = new ComplexMatrix(new Complex[][]{
             {new Complex(1, 0), new Complex(0, 0), new Complex(0, 0), new Complex(0, 0)},
             {new Complex(0, 0), new Complex(1, 0), new Complex(0, 0), new Complex(0, 0)},
             {new Complex(0, 0), new Complex(0, 0), new Complex(0, 0), new Complex(1, 0)},

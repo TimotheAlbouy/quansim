@@ -6,17 +6,17 @@ import java.util.Objects;
 /**
  * A complex number, represented by it real and imaginary parts.
  */
-public class Complex implements Number<Complex> {
+public class Complex {
 
     /**
      * the real part of the complex number
      */
-    private double re;
+    private final double re;
 
     /**
      * the imaginary part of the complex number
      */
-    private double im;
+    private final double im;
 
     /**
      * Constructor.
@@ -28,31 +28,51 @@ public class Complex implements Number<Complex> {
         this.im = im;
     }
 
-    @Override
+    /**
+     * Add the complex number with another one.
+     * @param c the other complex number
+     * @return a new complex number representing the result
+     */
     public Complex plus(Complex c) {
         return new Complex(this.re + c.re, this.im + c.im);
     }
 
-    @Override
+    /**
+     * Subtract the complex number with another one.
+     * @param c the other complex number
+     * @return a new complex number representing the result
+     */
     public Complex minus(Complex c) {
         return this.plus(c.negative());
     }
 
-    @Override
+    /**
+     * Multiply the complex number with another one.
+     * @param c the other complex number
+     * @return a new complex number representing the result
+     */
     public Complex times(Complex c) {
         double real = this.re * c.re - this.im * c.im;
         double imaginary = this.re * c.im + this.im * c.re;
         return new Complex(real, imaginary);
     }
 
-    @Override
+    /**
+     * Multiply the complex number with a scalar.
+     * @param s the scalar
+     * @return a new complex number representing the result
+     */
     public Complex times(double s) {
         double real = this.re * s;
         double imaginary = this.im * s;
         return new Complex(real, imaginary);
     }
 
-    @Override
+    /**
+     * Divide the complex number with another one.
+     * @param c the other number
+     * @return a new complex number representing the result
+     */
     public Complex divide(Complex c) {
         Complex conjugate = c.conjugate();
         Complex numerator = this.times(conjugate);
@@ -60,14 +80,22 @@ public class Complex implements Number<Complex> {
         return new Complex(numerator.re / denominator.re, numerator.im / denominator.re);
     }
 
-    @Override
+    /**
+     * Divide the complex number with a scalar.
+     * @param s the scalar
+     * @return a new complex number representing the result
+     */
     public Complex divide(double s) {
         double real = this.re / s;
         double imaginary = this.im / s;
         return new Complex(real, imaginary);
     }
 
-    @Override
+    /**
+     * Elevate the complex number with a scalar.
+     * @param p the power
+     * @return a new complex number representing the result
+     */
     public Complex power(int p) {
         if (p == 0)
             return new Complex(1, 0);
@@ -84,25 +112,23 @@ public class Complex implements Number<Complex> {
         return ret;
     }
 
-    @Override
+    /**
+     * Get the negative of the complex number.
+     * @return a new complex number representing the result
+     */
     public Complex negative() {
         return this.times(-1);
     }
 
-    @Override
+    /**
+     * Get the inverse of the complex number.
+     * @return a new complex number representing the result
+     */
     public Complex inverse() {
         double denominator = Math.pow(this.re, 2) + Math.pow(this.im, 2);
         double real = this.re / denominator;
         double imaginary = - this.im / denominator;
         return new Complex(real, imaginary);
-    }
-
-    /**
-     * Get a copy of the complex number.
-     * @return a copy of the complex
-     */
-    public Complex copy() {
-        return new Complex(this.re, this.im);
     }
 
     /**
@@ -153,11 +179,6 @@ public class Complex implements Number<Complex> {
         boolean reEquals = this.re - threshold < c.re && this.re + threshold > c.re;
         boolean imEquals = this.im - threshold < c.im && this.im + threshold > c.im;
         return reEquals && imEquals;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(re, im);
     }
 
     @Override

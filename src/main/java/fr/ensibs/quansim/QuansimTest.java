@@ -31,9 +31,11 @@ public class QuansimTest {
      * Constructor.
      */
     public QuansimTest() {
-        this.testIdentitiesTheoric();
+        //this.testIdentitiesTheoric();
         System.out.println();
-        this.testIdentitiesEmpiric();
+        //this.testIdentitiesEmpiric();
+        System.out.println();
+        this.testRegister();
     }
 
     /**
@@ -73,8 +75,7 @@ public class QuansimTest {
         for (int i = 0; i < ITERATIONS; i++) {
             model = randomQBit();
             qb1 = model.copy().H().Y().H();
-            qb2 = model.copy();
-            qb2.setState(Y.negative().times(qb2.getState()).getColumnVector(0));
+            qb2 = model.copy().apply(Y.negative());
             if (qb1.equals(qb2)) ctr++;
         }
         if (ctr == ITERATIONS)
@@ -100,8 +101,7 @@ public class QuansimTest {
         for (int i = 0; i < ITERATIONS; i++) {
             model = randomQBit();
             qb1 = model.copy().H();
-            qb2 = model.copy();
-            qb2.setState(X.plus(Z).divide(Math.sqrt(2)).times(qb2.getState()).getColumnVector(0));
+            qb2 = model.copy().apply(X.plus(Z).divide(Math.sqrt(2)));
             if (qb1.equals(qb2)) ctr++;
         }
         if (ctr == ITERATIONS)
@@ -163,8 +163,7 @@ public class QuansimTest {
         for (int i = 0; i < ITERATIONS; i++) {
             model = randomQBit();
             qb1 = model.copy().H().Y().H();
-            qb2 = model.copy();
-            qb2.setState(Y.negative().times(qb2.getState()).getColumnVector(0));
+            qb2 = model.copy().apply(Y.negative());
             if (qb1.randomDraw()) ctr1++;
             if (qb2.randomDraw()) ctr2++;
         }
@@ -198,8 +197,7 @@ public class QuansimTest {
         for (int i = 0; i < ITERATIONS; i++) {
             model = randomQBit();
             qb1 = model.copy().H();
-            qb2 = model.copy();
-            qb2.setState(X.plus(Z).divide(Math.sqrt(2)).times(qb2.getState()).getColumnVector(0));
+            qb2 = model.copy().apply(X.plus(Z).divide(Math.sqrt(2)));
             if (qb1.randomDraw()) ctr1++;
             if (qb2.randomDraw()) ctr2++;
         }
@@ -220,6 +218,31 @@ public class QuansimTest {
         if (roughlyEqual(ctr1, ctr2))
             System.out.println("success");
         else System.out.println("failure");
+    }
+
+    private void testRegister() {
+        System.out.println("THEORIC TEST OF QBIT REGISTER");
+        QBitRegister qr1 = randomQBitRegister(2);
+        QBitRegister qr2 = qr1.copy().apply(X, 1);
+        System.out.println(qr1);
+        System.out.println(qr2);
+
+        /* *
+        QBitRegister model, qr1, qr2;
+        int ctr1, ctr2;
+
+        System.out.print("1) HXH = Z: ");
+        ctr1 = 0;
+        ctr2 = 0;
+        for (int i = 0; i < ITERATIONS; i++) {
+            model = randomQBitRegister(2);
+            qr1 = model.copy().apply();
+
+            qr2 = model.copy().Z();
+            if (qr1.randomDraw()) ctr1++;
+            if (qr2.randomDraw()) ctr2++;
+        }
+        /* */
     }
 
     /**
@@ -247,6 +270,38 @@ public class QuansimTest {
         Complex alpha = new Complex(alphaRe, alphaIm);
         Complex beta = new Complex(betaRe, betaIm);
         return new QBit(alpha, beta);
+    }
+
+    /**
+     * Generate a qbit register with a random state.
+     * @param n the number of qbits
+     * @return a random qbit
+     */
+    private QBitRegister randomQBitRegister(int n) {
+        // generalization of randomQBit()
+        if (n <= 0)
+            throw new IllegalArgumentException("The number of qbits in the register must be positive.");
+
+        int length = (int) Math.pow(2, n);
+        int boundsNb = 2 * length + 1;
+        double[] bounds = new double[boundsNb];
+        bounds[0] = 0;
+        bounds[boundsNb - 1] = 1;
+        for (int i = 1; i < boundsNb - 1; i++)
+            bounds[i] = Math.random();
+        Arrays.sort(bounds);
+
+        Complex[] coordinates = new Complex[length];
+        for (int i = 0; i < length; i++) {
+            int startIndex = 2 * i;
+            double re = Math.sqrt(bounds[startIndex + 1] - bounds[startIndex]);
+            double im = Math.sqrt(bounds[startIndex + 2] - bounds[startIndex + 1]);
+            if (this.randomBoolean()) re *= -1;
+            if (this.randomBoolean()) im *= -1;
+            coordinates[i] = new Complex(re, im);
+        }
+
+        return new QBitRegister(coordinates);
     }
 
     /**
