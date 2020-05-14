@@ -54,6 +54,15 @@ public class QBitRegister {
     }
 
     /**
+     * Give the probability to draw the given basic state.
+     * @param basicState the decimal representation of the basic state (e.g. 3 = b011 in a 3 qbits register)
+     * @return the corresponding probability
+     */
+    public double proba(int basicState) {
+        return Math.pow(this.state.getCoordinate(basicState).modulus(), 2);
+    }
+
+    /**
      * Apply a quantic gate on a qbit of the register.
      * @param qg the quantic gate matrix
      * @param qbitIndex the index of the qbit in the register
@@ -61,7 +70,7 @@ public class QBitRegister {
      */
     public QBitRegister apply(ComplexMatrix qg, int qbitIndex) {
         if (qg == null)
-            throw new NullPointerException("The operation matrix cannot be null.");
+            throw new NullPointerException("The quantum gate matrix cannot be null.");
 
         if (qg.width() != 2 && qg.height() != 2)
             throw new IllegalArgumentException("The quantum gate matrix must be 2x2.");
@@ -93,35 +102,6 @@ public class QBitRegister {
     }
 
     /**
-     * Get a qbit from the register.
-     * @param i the index of the qbit to retrieve
-     * @return the qbit identified by its index
-     */
-    public QBit getQBit(int i) {
-        if (i < 0 || i >= this.state.length() / 2)
-            throw new IndexOutOfBoundsException("The index of the qbit is out of bounds.");
-
-        Complex alpha = new Complex(0, 0);
-        Complex beta = new Complex(0, 0);
-        // for each value of the vector representing the qbit register's state
-        for (int j = 0; j < this.state.length(); j++) {
-            // we separate the values of the vector into several sections
-            // that are part of alpha and those that are part of beta
-            int sectionLength = (int) (this.state.length() / Math.pow(2, i + 1));
-            // we determine in which section the current value is in
-            int sectionIndex = (j - (j % sectionLength)) / sectionLength;
-            boolean addAlpha = sectionIndex % 2 == 0 ;
-            // if the value is in an even section, add it to alpha
-            if (addAlpha)
-                alpha = alpha.plus(this.state.getCoordinate(j));
-            // if the value is in an odd section, add it to beta
-            else beta = beta.plus(this.state.getCoordinate(j));
-        }
-
-        return new QBit(alpha, beta);
-    }
-
-    /**
      * Draw values randomly for the qbits of the register according to their associated probabilities.
      * @return an array of booleans, which are equal to true if the drawn bit was 1, and false otherwise
      */
@@ -131,7 +111,7 @@ public class QBitRegister {
         double drawnValue = Math.random();
         int drawnState = -1;
         // for all the complexes of the register's state
-        for (int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < this.state.length(); i++) {
             // if the drawn state has not been determined yet
             if (drawnState == -1) {
                 // we accumulate the square moduli of the previous complexes
@@ -150,7 +130,7 @@ public class QBitRegister {
             else this.state.setCoordinate(i, new Complex(0, 0));
         }
         // return the binary representation of the drawn state
-        return toBinary(drawnState);
+        return toBinary(drawnState, this.size());
     }
 
     /**
@@ -176,15 +156,18 @@ public class QBitRegister {
         return state.toString();
     }
 
-    private static boolean[] toBinary(int number) {
-        // number of bits = upper(log2(number))
-        int length = (int) Math.ceil(Math.log10(number) / Math.log(2));
+    private static boolean[] toBinary(int number, int length) {
         final boolean[] ret = new boolean[length];
         for (int i = 0; i < length; i++)
             ret[length - 1 - i] = (1 << i & number) != 0;
         return ret;
     }
 
+    /**
+     * Tell if the given number is a power of 2.
+     * @param number the number to check
+     * @return true if and only if the number is a power of 2
+     */
     private static boolean isPowerOfTwo(int number) {
         return number > 0 && ((number & (number - 1)) == 0);
     }

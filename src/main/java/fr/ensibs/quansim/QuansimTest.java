@@ -132,8 +132,8 @@ public class QuansimTest {
         System.out.print("1) HXH = Z: ");
         ctr1 = 0;
         ctr2 = 0;
+        model = randomQBit();
         for (int i = 0; i < ITERATIONS; i++) {
-            model = randomQBit();
             qb1 = model.copy().H().X().H();
             qb2 = model.copy().Z();
             if (qb1.randomDraw()) ctr1++;
@@ -146,8 +146,8 @@ public class QuansimTest {
         System.out.print("2) HZH = X: ");
         ctr1 = 0;
         ctr2 = 0;
+        model = randomQBit();
         for (int i = 0; i < ITERATIONS; i++) {
-            model = randomQBit();
             qb1 = model.copy().H().Z().H();
             qb2 = model.copy().X();
             if (qb1.randomDraw()) ctr1++;
@@ -160,8 +160,8 @@ public class QuansimTest {
         System.out.print("3) HYH = -Y: ");
         ctr1 = 0;
         ctr2 = 0;
+        model = randomQBit();
         for (int i = 0; i < ITERATIONS; i++) {
-            model = randomQBit();
             qb1 = model.copy().H().Y().H();
             qb2 = model.copy().apply(Y.negative());
             if (qb1.randomDraw()) ctr1++;
@@ -176,8 +176,8 @@ public class QuansimTest {
         ctr2 = 0;
         ctr3 = 0;
         ctr4 = 0;
+        model = randomQBit();
         for (int i = 0; i < ITERATIONS; i++) {
-            model = randomQBit();
             qb1 = model.copy().X().X();
             qb2 = model.copy().Y().Y();
             qb3 = model.copy().Z().Z();
@@ -194,8 +194,8 @@ public class QuansimTest {
         System.out.print("5) H = (X+Z)/√2: ");
         ctr1 = 0;
         ctr2 = 0;
+        model = randomQBit();
         for (int i = 0; i < ITERATIONS; i++) {
-            model = randomQBit();
             qb1 = model.copy().H();
             qb2 = model.copy().apply(X.plus(Z).divide(Math.sqrt(2)));
             if (qb1.randomDraw()) ctr1++;
@@ -208,8 +208,8 @@ public class QuansimTest {
         System.out.print("6) H² = I: ");
         ctr1 = 0;
         ctr2 = 0;
+        model = randomQBit();
         for (int i = 0; i < ITERATIONS; i++) {
-            model = randomQBit();
             qb1 = model.copy().H().H();
             qb2 = model.copy();
             if (qb1.randomDraw()) ctr1++;
@@ -220,29 +220,41 @@ public class QuansimTest {
         else System.out.println("failure");
     }
 
+    /**
+     * Test the behaviour of qbit registers.
+     */
     private void testRegister() {
-        System.out.println("THEORIC TEST OF QBIT REGISTER");
-        QBitRegister qr1 = randomQBitRegister(2);
-        QBitRegister qr2 = qr1.copy().apply(X, 1);
-        System.out.println(qr1);
-        System.out.println(qr2);
-
-        /* *
+        System.out.println("EMPIRIC TEST OF 2 QBITS REGISTERS");
         QBitRegister model, qr1, qr2;
         int ctr1, ctr2;
 
-        System.out.print("1) HXH = Z: ");
+        System.out.print("1) X on LSB: ");
         ctr1 = 0;
         ctr2 = 0;
+        model = randomQBitRegister(2);
         for (int i = 0; i < ITERATIONS; i++) {
-            model = randomQBitRegister(2);
-            qr1 = model.copy().apply();
-
-            qr2 = model.copy().Z();
-            if (qr1.randomDraw()) ctr1++;
-            if (qr2.randomDraw()) ctr2++;
+            qr1 = model.copy();
+            qr2 = model.copy().apply(X, 0);
+            if (qr1.randomDraw()[1]) ctr1++;
+            if (!qr2.randomDraw()[1]) ctr2++;
         }
-        /* */
+        if (roughlyEqual(ctr1, ctr2))
+            System.out.println("success");
+        else System.out.println("failure");
+
+        System.out.print("2) X on MSB: ");
+        ctr1 = 0;
+        ctr2 = 0;
+        model = randomQBitRegister(2);
+        for (int i = 0; i < ITERATIONS; i++) {
+            qr1 = model.copy();
+            qr2 = model.copy().apply(X, 1);
+            if (qr1.randomDraw()[0]) ctr1++;
+            if (!qr2.randomDraw()[0]) ctr2++;
+        }
+        if (roughlyEqual(ctr1, ctr2))
+            System.out.println("success");
+        else System.out.println("failure");
     }
 
     /**
@@ -282,8 +294,8 @@ public class QuansimTest {
         if (n <= 0)
             throw new IllegalArgumentException("The number of qbits in the register must be positive.");
 
-        int length = (int) Math.pow(2, n);
-        int boundsNb = 2 * length + 1;
+        int complexNb = (int) Math.pow(2, n);
+        int boundsNb = 2 * complexNb + 1;
         double[] bounds = new double[boundsNb];
         bounds[0] = 0;
         bounds[boundsNb - 1] = 1;
@@ -291,8 +303,8 @@ public class QuansimTest {
             bounds[i] = Math.random();
         Arrays.sort(bounds);
 
-        Complex[] coordinates = new Complex[length];
-        for (int i = 0; i < length; i++) {
+        Complex[] coordinates = new Complex[complexNb];
+        for (int i = 0; i < complexNb; i++) {
             int startIndex = 2 * i;
             double re = Math.sqrt(bounds[startIndex + 1] - bounds[startIndex]);
             double im = Math.sqrt(bounds[startIndex + 2] - bounds[startIndex + 1]);
