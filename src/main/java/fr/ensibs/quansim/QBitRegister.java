@@ -64,13 +64,12 @@ public class QBitRegister {
         return Math.pow(this.state.getCoordinate(basicState).modulus(), 2);
     }
 
-    /**
+    /*
      * Apply a 2x2 quantic gate on a qbit of the register.
      * @param qg the quantic gate matrix
      * @param qbitIdx the index of the qbit in the register
      * @return the qbit register after the quantic gate
-     */
-    /* *
+     *
     public QBitRegister apply(ComplexMatrix qg, int qbitIdx) {
         if (qg == null)
             throw new NullPointerException("The quantum gate matrix cannot be null.");

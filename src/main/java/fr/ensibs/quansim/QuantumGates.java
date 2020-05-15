@@ -48,6 +48,16 @@ public class QuantumGates {
     });
 
     /**
+     * SWAP quantum game matrix
+     */
+    public static final ComplexMatrix SWAP = new ComplexMatrix(new Complex[][]{
+            {new Complex(1, 0), new Complex(0, 0), new Complex(0, 0), new Complex(0, 0)},
+            {new Complex(0, 0), new Complex(0, 0), new Complex(1, 0), new Complex(0, 0)},
+            {new Complex(0, 0), new Complex(1, 0), new Complex(0, 0), new Complex(0, 0)},
+            {new Complex(0, 0), new Complex(0, 0), new Complex(0, 0), new Complex(1, 0)}
+    });
+
+    /**
      * Private constructor to assert noninstanciability.
      */
     private QuantumGates() {

@@ -264,28 +264,19 @@ public class QuansimTest {
      */
     private void testEntanglement() {
         System.out.println("TEST OF ENTANGLEMENT");
-        Complex c0 = new Complex(0, 0);
-        Complex c2 = new Complex(1/Math.sqrt(2), 0);
-        Complex c4 = new Complex(1/Math.sqrt(4), 0);
-        QBitRegister model = new QBitRegister(new Complex[]{c0, c2, c4, c4});//randomQBitRegister(2);
+        QBitRegister model = new QBitRegister(2);
         System.out.println(model);
-        System.out.println(model.apply(H, 0));
-        System.out.println(model.apply(CNOT, 0, 1));
-        /*
         boolean failure = false;
         int i = 0;
-        int ctr = 0;
-        while (i < ITERATIONS) {
-            QBitRegister qr = model.copy().apply(H, 0).apply(CNOT, 0, 1);
+        while (i < ITERATIONS && !failure) {
+            QBitRegister qr = model.copy().apply(H, 1).apply(CNOT, 0, 1);
             boolean[] draws = qr.randomDraw();
             if (draws[0] != draws[1]) failure = true;
-            if (draws[0] == draws[1]) ctr++;
             i++;
         }
         if (!failure)
             System.out.println("success");
         else System.out.println("failure");
-        System.out.println(ctr);*/
     }
 
     /**
