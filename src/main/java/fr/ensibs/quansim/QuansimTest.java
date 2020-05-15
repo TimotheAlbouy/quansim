@@ -35,7 +35,9 @@ public class QuansimTest {
         System.out.println();
         //this.testIdentitiesEmpiric();
         System.out.println();
-        this.testRegister();
+        //this.testRegister();
+        System.out.println();
+        this.testEntanglement();
     }
 
     /**
@@ -224,7 +226,7 @@ public class QuansimTest {
      * Test the behaviour of qbit registers.
      */
     private void testRegister() {
-        System.out.println("EMPIRIC TEST OF 2 QBITS REGISTERS");
+        System.out.println("TEST OF 2 QBITS REGISTERS");
         QBitRegister model, qr1, qr2;
         int ctr1, ctr2;
 
@@ -255,6 +257,35 @@ public class QuansimTest {
         if (roughlyEqual(ctr1, ctr2))
             System.out.println("success");
         else System.out.println("failure");
+    }
+
+    /**
+     * Test of entanglement of 2 qubits.
+     */
+    private void testEntanglement() {
+        System.out.println("TEST OF ENTANGLEMENT");
+        Complex c0 = new Complex(0, 0);
+        Complex c2 = new Complex(1/Math.sqrt(2), 0);
+        Complex c4 = new Complex(1/Math.sqrt(4), 0);
+        QBitRegister model = new QBitRegister(new Complex[]{c0, c2, c4, c4});//randomQBitRegister(2);
+        System.out.println(model);
+        System.out.println(model.apply(H, 0));
+        System.out.println(model.apply(CNOT, 0, 1));
+        /*
+        boolean failure = false;
+        int i = 0;
+        int ctr = 0;
+        while (i < ITERATIONS) {
+            QBitRegister qr = model.copy().apply(H, 0).apply(CNOT, 0, 1);
+            boolean[] draws = qr.randomDraw();
+            if (draws[0] != draws[1]) failure = true;
+            if (draws[0] == draws[1]) ctr++;
+            i++;
+        }
+        if (!failure)
+            System.out.println("success");
+        else System.out.println("failure");
+        System.out.println(ctr);*/
     }
 
     /**

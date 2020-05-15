@@ -1,5 +1,7 @@
 package fr.ensibs.quansim;
 
+import java.util.Arrays;
+
 /**
  * A qbit register, containing one or more qbits.
  */
@@ -63,41 +65,111 @@ public class QBitRegister {
     }
 
     /**
-     * Apply a quantic gate on a qbit of the register.
+     * Apply a 2x2 quantic gate on a qbit of the register.
      * @param qg the quantic gate matrix
-     * @param qbitIndex the index of the qbit in the register
+     * @param qbitIdx the index of the qbit in the register
      * @return the qbit register after the quantic gate
      */
-    public QBitRegister apply(ComplexMatrix qg, int qbitIndex) {
+    /* *
+    public QBitRegister apply(ComplexMatrix qg, int qbitIdx) {
         if (qg == null)
             throw new NullPointerException("The quantum gate matrix cannot be null.");
 
         if (qg.width() != 2 && qg.height() != 2)
             throw new IllegalArgumentException("The quantum gate matrix must be 2x2.");
 
-        if (qbitIndex < 0 || qbitIndex >= this.size())
+        if (qbitIdx < 0 || qbitIdx >= this.size())
             throw new IndexOutOfBoundsException("The qbit index is out of bounds.");
 
-        int offset = (int) Math.pow(2, qbitIndex);
-        int alphaCoord = 0;
-        int betaCoord = offset;
+        int offset = (int) Math.pow(2, qbitIdx);
+        int startIdx = 0;
         int ctr = 0;
-        while (alphaCoord < this.state.length()) {
-            Complex alpha = this.state.getCoordinate(alphaCoord);
-            Complex beta = this.state.getCoordinate(betaCoord);
-            Complex[] coordinates = new Complex[]{alpha, beta};
+        while (startIdx < this.state.length()) {
+            Complex c1 = this.state.getCoordinate(startIdx);
+            Complex c2 = this.state.getCoordinate(startIdx + offset);
+            Complex[] coordinates = new Complex[]{c1, c2};
             ComplexVector cv = new ComplexVector(coordinates);
             cv = qg.times(cv).getColumnVector(0);
-            this.state.setCoordinate(alphaCoord, cv.getCoordinate(0));
-            this.state.setCoordinate(betaCoord, cv.getCoordinate(1));
-            alphaCoord++;
+            this.state.setCoordinate(startIdx, cv.getCoordinate(0));
+            this.state.setCoordinate(startIdx + offset, cv.getCoordinate(1));
+            startIdx++;
             ctr++;
             if (ctr >= offset) {
-                alphaCoord += offset;
+                startIdx += offset;
                 ctr = 0;
             }
-            betaCoord = alphaCoord + offset;
         }
+        return this;
+    }
+    /* */
+
+    /**
+     * Apply a nxn quantic gate on one or several qbits of the register.
+     * @param qg the quantic gate matrix
+     * @param qbitsIdx the indexes of the qbits in the register
+     * @return the qbit register after the quantic gate
+     */
+    public QBitRegister apply(ComplexMatrix qg, int... qbitsIdx) {
+        if (qg == null)
+            throw new NullPointerException("The quantum gate matrix cannot be null.");
+
+        if (qg.width() <= 1 || !isPowerOfTwo(qg.width()))
+            throw new IllegalArgumentException("The quantum gate matrix must have dimensions that are a power of 2.");
+
+        if (qg.width() != qg.height())
+            throw new IllegalArgumentException("The quantum gate matrix must be square.");
+
+        if (qg.width() > this.state.length())
+            throw new IllegalArgumentException("The quantum gate matrix cannot be longer than the state vector.");
+
+        if (qbitsIdx == null)
+            throw new NullPointerException("The list of qbits indexes cannot be null.");
+
+        if (qbitsIdx.length == 0)
+            throw new IllegalArgumentException("There must be at least 1 selected qubit.");
+
+        if (Math.pow(2, qbitsIdx.length) !=  qg.width())
+            throw new IllegalArgumentException("The given quantic gate is incompatible with the number of qubits.");
+
+        Arrays.sort(qbitsIdx);
+        for (int i = 0; i < qbitsIdx.length; i++)
+            if (qbitsIdx[i] < 0 || qbitsIdx[i] >= this.size())
+                throw new IndexOutOfBoundsException("One of the qbit indexes is out of bounds.");
+            else if (i > 0 && qbitsIdx[i - 1] == qbitsIdx[i])
+                throw new IllegalArgumentException("The list of qbit indexes cannot contain duplicates.");
+
+        // length of the sub-vectors on which we will apply the quantic gate
+        int subvectorLen = qg.width();
+        // number of sub-vectors, i.e. number of times we apply the quantic gate on the state vector
+        int subvectorNb = this.state.length() / subvectorLen;
+
+        boolean[][] substatesBin = new boolean[this.state.length()][qbitsIdx.length];
+        for (int i = 0; i < substatesBin.length; i++) {
+            boolean[] stateBin = toBinary(i, this.size());
+            for (int j = 0; j < qbitsIdx.length; j++)
+                substatesBin[i][qbitsIdx.length - 1 - j] = stateBin[this.size() - 1 - qbitsIdx[j]];
+        }
+
+        int[] offsets = new int[subvectorLen];
+        for (int i = 0; i < subvectorLen; i++) {
+            int idx = 0;
+            while (!Arrays.equals(toBinary(i, qbitsIdx.length), substatesBin[idx])) idx++;
+            offsets[i] = idx;
+        }
+
+        int startIdx = 0;
+        for (int i = 0; i < subvectorNb; i++) {
+            while (!Arrays.equals(new boolean[qbitsIdx.length], substatesBin[startIdx])) startIdx++;
+            Complex[] coordinates = new Complex[subvectorLen];
+            for (int j = 0; j < subvectorLen; j++)
+                coordinates[j] = this.state.getCoordinate(startIdx + offsets[j]);
+            ComplexVector cv = new ComplexVector(coordinates);
+            cv = qg.times(cv).getColumnVector(0);
+            for (int j = 0; j < subvectorLen; j++)
+                this.state.setCoordinate(startIdx + offsets[j], cv.getCoordinate(j));
+            startIdx++;
+        }
+
         return this;
     }
 
@@ -156,6 +228,12 @@ public class QBitRegister {
         return state.toString();
     }
 
+    /**
+     * Convert a number to its binary representation.
+     * @param number the number to convert
+     * @param length the number of bits in output
+     * @return an array of booleans representing the binary number
+     */
     private static boolean[] toBinary(int number, int length) {
         final boolean[] ret = new boolean[length];
         for (int i = 0; i < length; i++)
