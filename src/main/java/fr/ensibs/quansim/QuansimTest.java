@@ -31,9 +31,9 @@ public class QuansimTest {
      * Constructor.
      */
     public QuansimTest() {
-        //this.testIdentitiesTheoric();
+        this.testIdentitiesTheoric();
         System.out.println();
-        //this.testIdentitiesEmpiric();
+        this.testIdentitiesEmpiric();
         System.out.println();
         //this.testRegister();
         System.out.println();
@@ -265,7 +265,6 @@ public class QuansimTest {
     private void testEntanglement() {
         System.out.println("TEST OF ENTANGLEMENT");
         QBitRegister model = new QBitRegister(2);
-        System.out.println(model);
         boolean failure = false;
         int i = 0;
         while (i < ITERATIONS && !failure) {
