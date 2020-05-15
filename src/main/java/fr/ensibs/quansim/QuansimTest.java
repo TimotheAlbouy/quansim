@@ -35,7 +35,7 @@ public class QuansimTest {
         System.out.println();
         this.testIdentitiesEmpiric();
         System.out.println();
-        //this.testRegister();
+        this.testRegister();
         System.out.println();
         this.testEntanglement();
     }
